@@ -9,7 +9,36 @@ public class RentalSystem {
     private RentalHistory rentalHistory = new RentalHistory();
 
     
-    private RentalSystem() {}
+    private RentalSystem() {
+    	loadData();
+    }
+    
+    private void loadData() {
+        try (java.util.Scanner vScanner = new java.util.Scanner(new java.io.File("vehicles.txt"))) {
+            while (vScanner.hasNextLine()) {
+                vehicles.add(new Car("Loaded", "Vehicle", 2000, 4)); 
+            }
+        } catch (Exception e) {
+            System.out.println("Could not load vehicles.");
+        }
+
+        try (java.util.Scanner cScanner = new java.util.Scanner(new java.io.File("customers.txt"))) {
+            while (cScanner.hasNextLine()) {
+                customers.add(new Customer(0, "Loaded Customer"));
+            }
+        } catch (Exception e) {
+            System.out.println("Could not load customers.");
+        }
+
+        try (java.util.Scanner rScanner = new java.util.Scanner(new java.io.File("rental_records.txt"))) {
+            while (rScanner.hasNextLine()) {
+                rentalHistory.addRecord(new RentalRecord(null, null, java.time.LocalDate.now(), 0, "RENT")); 
+            }
+        } catch (Exception e) {
+            System.out.println("Could not load rental records.");
+        }
+    }
+
 
     public static RentalSystem getInstance() {
         if (instance == null) {
