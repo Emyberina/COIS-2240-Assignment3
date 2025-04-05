@@ -47,10 +47,16 @@ public class RentalSystem {
         return instance;
     }
     
-    public void addVehicle(Vehicle vehicle) {
+    public boolean addVehicle(Vehicle vehicle) {
+        if (findVehicleByPlate(vehicle.getLicensePlate()) != null) {
+            System.out.println("A vehicle with this license plate already exists.");
+            return false;
+        }
         vehicles.add(vehicle);
         saveVehicle(vehicle);
+        return true;
     }
+
     
     private void saveVehicle(Vehicle vehicle) {
         try (java.io.FileWriter writer = new java.io.FileWriter("vehicles.txt", true)) {
@@ -69,10 +75,16 @@ public class RentalSystem {
     }
     
     
-    public void addCustomer(Customer customer) {
+    public boolean addCustomer(Customer customer) {
+        if (findCustomerById(String.valueOf(customer.getCustomerId())) != null) {
+            System.out.println("A customer with this ID already exists.");
+            return false;
+        }
         customers.add(customer);
         saveCustomer(customer);
+        return true;
     }
+
     
  
     private void saveRecord(RentalRecord record) {
