@@ -145,32 +145,27 @@ public class RentalSystem {
 
 
 
-    public void rentVehicle(Vehicle vehicle, Customer customer, LocalDate date, double amount) {
+    public boolean rentVehicle(Vehicle vehicle, Customer customer, LocalDate date, double amount) {
         if (vehicle.getStatus() == Vehicle.VehicleStatus.AVAILABLE) {
             vehicle.setStatus(Vehicle.VehicleStatus.RENTED);
-            RentalRecord record = new RentalRecord(vehicle, customer, date, amount, "RENT");
-            rentalHistory.addRecord(record);
-            saveRecord(record);
-
-            System.out.println("Vehicle rented to " + customer.getCustomerName());
+            rentalHistory.addRecord(new RentalRecord(vehicle, customer, date, amount, "RENT"));
+            saveRecord(new RentalRecord(vehicle, customer, date, amount, "RENT"));
+            return true;
         }
-        else {
-            System.out.println("Vehicle is not available for renting.");
-        }
+        return false;
     }
 
-    public void returnVehicle(Vehicle vehicle, Customer customer, LocalDate date, double extraFees) {
+
+    public boolean returnVehicle(Vehicle vehicle, Customer customer, LocalDate date, double fees) {
         if (vehicle.getStatus() == Vehicle.VehicleStatus.RENTED) {
             vehicle.setStatus(Vehicle.VehicleStatus.AVAILABLE);
-            RentalRecord record = new RentalRecord(vehicle, customer, date, extraFees, "RETURN");
-            rentalHistory.addRecord(record);
-            saveRecord(record);
-            System.out.println("Vehicle returned by " + customer.getCustomerName());
+            rentalHistory.addRecord(new RentalRecord(vehicle, customer, date, fees, "RETURN"));
+            saveRecord(new RentalRecord(vehicle, customer, date, fees, "RETURN"));
+            return true;
         }
-        else {
-            System.out.println("Vehicle is not rented.");
-        }
-    }    
+        return false;
+    }
+ 
 
     public void displayVehicles(boolean onlyAvailable) {
     	System.out.println("|     Type         |\tPlate\t|\tMake\t|\tModel\t|\tYear\t|");
