@@ -10,13 +10,34 @@ public class RentalSystem {
 
     
     private RentalSystem() {
-    	loadData();
+        loadData();
     }
-    
+
+
     private void loadData() {
         try (java.util.Scanner vScanner = new java.util.Scanner(new java.io.File("vehicles.txt"))) {
             while (vScanner.hasNextLine()) {
-                vehicles.add(new Car("Loaded", "Vehicle", 2000, 4)); 
+                String line = vScanner.nextLine();
+                String[] parts = line.split("\\|");
+                if (parts.length >= 6) {
+                    String plate = parts[1].trim();
+                    String make = parts[2].trim();
+                    String model = parts[3].trim();
+                    int year = Integer.parseInt(parts[4].trim());
+                    Vehicle.VehicleStatus status = Vehicle.VehicleStatus.valueOf(parts[5].trim());
+
+
+                    int seats = 4;
+                    if (line.contains("Seats:")) {
+                        String[] tokens = line.split("Seats:");
+                        seats = Integer.parseInt(tokens[1].trim());
+                    }
+
+                    Car car = new Car(make, model, year, seats);
+                    car.setLicensePlate(plate);
+                    car.setStatus(status);
+                    vehicles.add(car);
+                }
             }
         } catch (Exception e) {
             System.out.println("Could not load vehicles.");
@@ -24,7 +45,13 @@ public class RentalSystem {
 
         try (java.util.Scanner cScanner = new java.util.Scanner(new java.io.File("customers.txt"))) {
             while (cScanner.hasNextLine()) {
-                customers.add(new Customer(0, "Loaded Customer"));
+                String line = cScanner.nextLine();
+                String[] parts = line.split("\\|");
+                if (parts.length >= 2) {
+                    int id = Integer.parseInt(parts[0].replace("Customer ID:", "").trim());
+                    String name = parts[1].replace("Name:", "").trim();
+                    customers.add(new Customer(id, name));
+                }
             }
         } catch (Exception e) {
             System.out.println("Could not load customers.");
@@ -32,12 +59,33 @@ public class RentalSystem {
 
         try (java.util.Scanner rScanner = new java.util.Scanner(new java.io.File("rental_records.txt"))) {
             while (rScanner.hasNextLine()) {
-                rentalHistory.addRecord(new RentalRecord(null, null, java.time.LocalDate.now(), 0, "RENT")); 
+                String line = rScanner.nextLine();
+                String[] parts = line.split("\\|");
+                if (parts.length >= 5) {
+                    String type = parts[0].trim();
+                    String plate = parts[1].replace("Plate:", "").trim();
+                    String customerName = parts[2].replace("Customer:", "").trim();
+                    LocalDate date = LocalDate.parse(parts[3].replace("Date:", "").trim());
+                    double amount = Double.parseDouble(parts[4].replace("Amount:", "").replace("$", "").trim());
+
+                    Vehicle v = findVehicleByPlate(plate);
+                    Customer c = customers.stream()
+                        .filter(x -> x.getCustomerName().equalsIgnoreCase(customerName))
+                        .findFirst()
+                        .orElse(null);
+
+                    if (v != null && c != null) {
+                        RentalRecord record = new RentalRecord(v, c, date, amount, type);
+                        rentalHistory.addRecord(record);
+                    }
+                }
             }
         } catch (Exception e) {
             System.out.println("Could not load rental records.");
         }
     }
+
+
 
 
     public static RentalSystem getInstance() {
