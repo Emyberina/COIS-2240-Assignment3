@@ -5,6 +5,11 @@ public abstract class Vehicle {
     private int year;
     private VehicleStatus status;
 
+    private boolean isValidPlate(String plate) {
+        return plate != null && plate.matches("[A-Z]{3}\\d{3}");
+    }
+
+    
     private String capitalize(String input) {
         if (input == null || input.isEmpty()) return null;
         return input.substring(0, 1).toUpperCase() + input.substring(1).toLowerCase();
@@ -27,8 +32,12 @@ public abstract class Vehicle {
     }
 
     public void setLicensePlate(String plate) {
-        this.licensePlate = plate == null ? null : plate.toUpperCase();
+        if (!isValidPlate(plate)) {
+            throw new IllegalArgumentException("Invalid license plate format.");
+        }
+        this.licensePlate = plate.toUpperCase();
     }
+
 
     public void setStatus(VehicleStatus status) {
     	this.status = status;

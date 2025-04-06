@@ -46,7 +46,12 @@ public class VehicleRentalApp {
 		            }
                     
                     if (vehicle != null) {
-                        vehicle.setLicensePlate(plate);
+                    	try {
+                    	    vehicle.setLicensePlate(plate);
+                    	} catch (IllegalArgumentException e) {
+                    	    System.out.println("Invalid plate: " + e.getMessage());
+                    	    break;
+                    	}
                         if (rentalSystem.addVehicle(vehicle)) {
                             System.out.println("Vehicle added.");
                         }
